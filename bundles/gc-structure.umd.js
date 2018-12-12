@@ -128,7 +128,6 @@
          * @return {?}
          */
             function () {
-                console.log(typeof this.branch, this.branch);
                 return !(this.branch.startsWith('develop') || this.branch === 'debug');
             };
         GCFooterComponent.decorators = [
