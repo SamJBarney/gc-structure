@@ -123,7 +123,8 @@ var GCFooterComponent = /** @class */ (function () {
      * @return {?}
      */
     function () {
-        return !(this.branch.startsWith('develop') || this.branch == 'debug');
+        console.log(typeof this.branch, this.branch);
+        return !(this.branch.startsWith('develop') || this.branch === 'debug');
     };
     GCFooterComponent.decorators = [
         { type: Component, args: [{
