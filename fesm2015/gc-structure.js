@@ -55,38 +55,53 @@ class GCFooterComponent {
         // If the target location is another app, build an external url to pass back
         if (this.location !== target_location) {
             data.type = 'external';
-            /** @type {?} */
-            let url = window.location.href
             // Build a different url depending on where app needs to go
-            // This block of code is horrible
-            ;
-            // Build a different url depending on where app needs to go
-            // This block of code is horrible
-            if (!url.startsWith('https://develop.gamechanger.studio')) {
-                switch (target_location) {
-                    case 'bbl':
-                        data.path = `https://bbl.gamechanger.studio/#/${path}`;
-                    case 'team-site':
-                        data.path = `https://${this.teamId}.gamechanger.studio/#/`;
-                }
-            }
-            else {
-                switch (target_location) {
-                    case 'bbl':
-                        data.path = `https://develop.gamechanger.studio/big-bash-buddy/#/${path}`;
-                    case 'team-site':
-                        data.path = `https://develop.gamechanger.studio/${this.teamId}/#/`;
-                }
+            switch (target_location) {
+                case 'bbl':
+                    data.path = this.buildBBLRoute(path);
+                case 'team-site':
+                    data.path = this.buildTeamSiteRoute(path);
             }
         }
         // Send the path info off to any registered handler
         this.onRoute.emit(data);
     }
+    /**
+     * @private
+     * @param {?} path
+     * @return {?}
+     */
+    buildBBLRoute(path) {
+        if (this.isProdBranch()) {
+            return `https://bbl.gamechanger.studio/#/${path}`;
+        }
+        // Dev branch path
+        return `https://develop.gamechanger.studio/big-bash-buddy/#/${path}`;
+    }
+    /**
+     * @private
+     * @param {?} path
+     * @return {?}
+     */
+    buildTeamSiteRoute(path) {
+        if (this.isProdBranch()) {
+            return `https://${this.teamId}.gamechanger.studio/#/`;
+        }
+        // Dev Branch path
+        return `https://develop.gamechanger.studio/${this.teamId}/#/`;
+    }
+    /**
+     * @private
+     * @return {?}
+     */
+    isProdBranch() {
+        return !(this.branch.startsWith('develop') || this.branch == 'debug');
+    }
 }
 GCFooterComponent.decorators = [
     { type: Component, args: [{
                 selector: 'gc-footer',
-                template: "<footer>\r\n  <div (click)=\"onMenuItemClicked('bbl', '/team/' + teamId + '/')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 0 }\" >\r\n    <span class=\"fa fa-home\" ></span>\r\n    <span class=\"title\">HOME</span>\r\n  </div>\r\n  <div (click)=\"onMenuItemClicked('bbl', '/team/' + teamId + '/video')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 1 }\" >\r\n    <span class=\"fa fa-play\" ></span>\r\n    <span class=\"title\">PLAY</span>\r\n  </div>\r\n  <div (click)=\"onMenuItemClicked('team-site')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 2 }\" >\r\n    <span class=\"fa fa-gamepad\" ></span>\r\n    <span class=\"title\">GAMES</span>\r\n  </div>\r\n  <div (click)=\"onMenuItemClicked('bbl', '/team/' + teamId + '/profile')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 3 }\" >\r\n    <span class=\"fa fa-user\" ></span>\r\n    <span class=\"title\">PROFILE</span>\r\n  </div>\r\n</footer>",
+                template: "<footer>\r\n  <div (click)=\"onMenuItemClicked('bbl', '/team/' + teamId + '/')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 0 }\" >\r\n    <div>\r\n      <span class=\"fa fa-home\" ></span>\r\n      <span class=\"title\">HOME</span>\r\n    </div>\r\n  </div>\r\n  <div (click)=\"onMenuItemClicked('bbl', '/team/' + teamId + '/video')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 1 }\" >\r\n    <div>\r\n      <span class=\"fa fa-play\" ></span>\r\n      <span class=\"title\">PLAY</span>\r\n    </div>\r\n  </div>\r\n  <div (click)=\"onMenuItemClicked('team-site')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 2 }\" >\r\n    <div>\r\n      <span class=\"fa fa-gamepad\" ></span>\r\n      <span class=\"title\">GAMES</span>\r\n    </div>\r\n  </div>\r\n  <div (click)=\"onMenuItemClicked('bbl', '/team/' + teamId + '/profile')\" [ngClass]=\"{ 'item': true, 'active': selectedItem == 3 }\" >\r\n    <div>\r\n      <span class=\"fa fa-user\" ></span>\r\n      <span class=\"title\">PROFILE</span>\r\n    </div>\r\n  </div>\r\n</footer>",
                 styles: ["footer{position:absolute;bottom:0;left:0;display:flex;flex-direction:row;justify-content:space-between;width:100vw;height:10vh;border-top:2px solid #fff;z-index:100}footer .item{color:#fff;width:25vw;position:relative}footer .item *{display:block;text-align:center}footer .item div{position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}footer .item .fa{font-size:4vh}footer .item .title{font-family:\"City Medium\";padding-top:5px;font-size:1.8vh;font-weight:400}"]
             }] }
 ];
@@ -94,6 +109,7 @@ GCFooterComponent.decorators = [
 GCFooterComponent.ctorParameters = () => [];
 GCFooterComponent.propDecorators = {
     teamId: [{ type: Input }],
+    branch: [{ type: Input }],
     selectedItem: [{ type: Input }],
     location: [{ type: Input }],
     onRoute: [{ type: Output }]
