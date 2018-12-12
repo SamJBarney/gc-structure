@@ -69,6 +69,7 @@ var GCFooterComponent = /** @class */ (function () {
         // If the target location is another app, build an external url to pass back
         if (this.location !== target_location) {
             data.type = 'external';
+            console.log(target_location);
             // Build a different url depending on where app needs to go
             switch (target_location) {
                 case 'bbl':
